@@ -59,6 +59,27 @@ uv run python -m build
 uv run twine check dist/*
 ```
 
+## Release
+
+The release workflow builds and publishes both the wheel and source archive
+when a `v*` tag is pushed. It uses PyPI Trusted Publishing, so no PyPI token is
+stored in GitHub Actions. Configure the PyPI project publisher for this
+repository, workflow, and the `pypi` environment before publishing.
+
+To prepare a release locally:
+
+```sh
+uv run python -m build
+uv run twine check dist/*
+```
+
+After updating the version in `pyproject.toml`, create and push a matching tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## Continuous integration
 
 GitHub Actions checks Python 3.10 through 3.14 with Ruff, mypy, and pytest.
