@@ -39,7 +39,7 @@ gist = Gist()
 topics = gist.classify("How to start a podcast with just your iPhone")
 
 for topic in topics:
-	print(topic.slug, topic.name, topic.score)
+    print(topic.slug, topic.name, topic.score)
 # technology Technology & Software 0.93
 ```
 
@@ -49,9 +49,9 @@ highest-scoring topic is retained even when it is below the threshold:
 
 ```python
 topics = gist.classify(
-	"A short article about software development",
-	top_k=5,
-	threshold=0.7,
+    "A short article about software development",
+    top_k=5,
+    threshold=0.7,
 )
 ```
 
@@ -185,7 +185,7 @@ The command-line interface is exposed as `taxotag`:
 
 ```sh
 uv run taxotag "How to start a podcast with your iPhone" \
-	--directory tests/fixtures/model
+  --directory tests/fixtures/model
 ```
 
 The inference pipeline is available when the local model assets and an
