@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local model assets and reference fixtures
+tests/fixtures/model/
+tests/fixtures/reference/
