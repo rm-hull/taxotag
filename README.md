@@ -10,7 +10,7 @@ project plan.
 
 Requirements:
 
-- Python 3.9 or newer
+- Python 3.10 or newer
 - [uv](https://docs.astral.sh/uv/)
 
 Create an isolated virtual environment and install the package with its
@@ -58,6 +58,13 @@ Build and validate the distribution:
 uv run python -m build
 uv run twine check dist/*
 ```
+
+## Continuous integration
+
+GitHub Actions checks Python 3.10 through 3.14 with Ruff, mypy, and pytest.
+The pinned model assets are cached by revision so model-backed tests do not
+redownload them on every run. Scheduled and manual workflows also run the
+explicit `slow` model-integration group.
 
 ## Run
 

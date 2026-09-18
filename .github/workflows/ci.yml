@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  UV_VERSION: "0.9.17"
+  MODEL_REVISION: "v2.2.0"
+
+jobs:
+  checks:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --python ${{ matrix.python-version }} --extra dev --extra litert
+
+      - name: Restore model assets
+        id: model-cache
+        uses: actions/cache@v5
+        with:
+          path: tests/fixtures/model
+          key: gist-model-${{ env.MODEL_REVISION }}
+
+      - name: Fetch model assets
+        if: steps.model-cache.outputs.cache-hit != 'true'
+        run: uv run python scripts/fetch_test_assets.py
+
+      - name: Run Ruff
+        run: |
+          uv run ruff check src/ tests/ scripts/
+          uv run ruff format --check src/ tests/ scripts/
+
+      - name: Run mypy
+        run: uv run mypy src/
+
+      - name: Run tests
+        run: uv run pytest
+
+  scheduled-integration:
+    name: Scheduled model integration
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync --python 3.14 --extra dev --extra litert
+
+      - name: Restore model assets
+        id: model-cache
+        uses: actions/cache@v5
+        with:
+          path: tests/fixtures/model
+          key: gist-model-${{ env.MODEL_REVISION }}
+
+      - name: Fetch model assets
+        if: steps.model-cache.outputs.cache-hit != 'true'
+        run: uv run python scripts/fetch_test_assets.py
+
+      - name: Run model-backed tests
+        run: uv run pytest -m slow

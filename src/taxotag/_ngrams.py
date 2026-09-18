@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import zlib
+from itertools import pairwise
 
 import numpy as np
 
@@ -25,7 +26,7 @@ def _words(text: str) -> list[str]:
 
 def _grams(words: list[str]) -> list[str]:
     grams = list(words)
-    grams.extend(f"{left}_{right}" for left, right in zip(words, words[1:]))
+    grams.extend(f"{left}_{right}" for left, right in pairwise(words))
 
     for word in words:
         wrapped = f"^{word}$"

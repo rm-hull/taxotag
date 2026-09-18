@@ -12,6 +12,7 @@ pytestmark = pytest.mark.skipif(
     not (MODEL / "gist.tflite").is_file(),
     reason="local Phase 1 model assets are not available",
 )
+pytestmark = [pytestmark, pytest.mark.slow]
 
 
 def test_scores_cover_the_taxonomy_for_oracle_texts() -> None:

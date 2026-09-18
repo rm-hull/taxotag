@@ -10,6 +10,7 @@ pytestmark = pytest.mark.skipif(
     not (MODEL / "gist.tflite").is_file(),
     reason="local Phase 1 model assets are not available",
 )
+pytestmark = [pytestmark, pytest.mark.slow]
 
 
 def test_head_returns_36_probabilities() -> None:
