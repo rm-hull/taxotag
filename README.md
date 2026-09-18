@@ -6,6 +6,98 @@ The package is under active development. The inference pipeline and model
 asset downloads are implemented in the package; remaining work follows the
 project plan.
 
+## Use as a library
+
+Install `taxotag` with the LiteRT runtime for the smallest on-device setup:
+
+```sh
+pip install "taxotag[litert]"
+```
+
+If your application already uses TensorFlow, install the TensorFlow extra
+instead:
+
+```sh
+pip install "taxotag[tensorflow]"
+```
+
+The package downloads the pinned model assets from Hugging Face when the model
+is first constructed. To use assets that you downloaded or packaged yourself,
+pass their directory explicitly. The directory must contain the tokenizer,
+embedding table and metadata, config, taxonomy, and `gist.tflite` files.
+
+### Classify text
+
+Create one `Gist` instance and reuse it for multiple inputs. `classify` returns
+ranked `Topic` objects. Each topic has a `slug`, display `name`, and model
+`score` between 0 and 1:
+
+```python
+from taxotag import Gist
+
+gist = Gist()
+topics = gist.classify("How to start a podcast with just your iPhone")
+
+for topic in topics:
+	print(topic.slug, topic.name, topic.score)
+# technology Technology & Software 0.93
+```
+
+The default result contains at most three topics. Set `top_k` to change the
+maximum, and set `threshold` to override the model's configured cutoff. The
+highest-scoring topic is retained even when it is below the threshold:
+
+```python
+topics = gist.classify(
+	"A short article about software development",
+	top_k=5,
+	threshold=0.7,
+)
+```
+
+### Get all topic scores
+
+Use `scores` when you need the complete multi-label distribution, such as for
+storing scores or aggregating results across a collection. It returns a
+dictionary containing all 36 topic slugs:
+
+```python
+scores = gist.scores("A new camera app uses machine learning")
+print(scores["technology"])
+```
+
+Scores are independent probabilities and do not sum to 1. Empty or
+whitespace-only input returns `{}` from `scores` and `[]` from `classify`.
+
+### Choose a model variant
+
+The default `multilingual` variant covers 101 languages. Use `english` only
+when input is reliably English or Latin-script text; it is smaller but does
+not cover scripts such as Arabic, Cyrillic, Chinese, Japanese, or Devanagari:
+
+```python
+gist = Gist(variant="english")
+```
+
+### Use local model assets
+
+For offline or controlled deployments, point `directory` at a complete local
+asset directory. This skips network access when all required files are
+present:
+
+```python
+from pathlib import Path
+from taxotag import Gist
+
+gist = Gist(directory=Path("/opt/models/gist"))
+topics = gist.classify("A guide to personal finance")
+```
+
+The model is a 36-topic, multi-label classifier. It is intended for short
+content such as titles, posts, and title-plus-description text. Reuse the
+same `Gist` instance because loading the tokenizer, embedding table, and
+inference head is substantially more expensive than classifying one input.
+
 ## Development setup
 
 Requirements:
