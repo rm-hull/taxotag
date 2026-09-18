@@ -27,6 +27,9 @@ jobs:
       - name: Set up Python
         run: uv python install 3.14
 
+      - name: Install release tools
+        run: uv sync --python 3.14 --extra dev
+
       - name: Build distributions
         run: uv build
 
