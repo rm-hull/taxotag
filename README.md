@@ -66,8 +66,9 @@ The command-line interface is exposed as `taxotag`:
 uv run taxotag "some text"
 ```
 
-The inference pipeline is not available until the later implementation phases
-are complete, so the current scaffold exits with a not-implemented message.
+The inference pipeline is available when the local model assets and an
+optional TFLite runtime are installed. The command uses the multilingual model
+by default and downloads missing assets from the pinned Hugging Face revision.
 
 To install an optional TFLite runtime for future inference work, choose one:
 
