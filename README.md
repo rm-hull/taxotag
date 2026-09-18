@@ -3,7 +3,8 @@
 Python port of Desert Ant Labs' Gist on-device topic tagger.
 
 The package is under active development. The inference pipeline and model
-asset downloads are implemented in later phases of the project plan.
+asset downloads are implemented in the package; remaining work follows the
+project plan.
 
 ## Development setup
 
@@ -63,19 +64,36 @@ uv run twine check dist/*
 The command-line interface is exposed as `taxotag`:
 
 ```sh
-uv run taxotag "some text"
+uv run taxotag "How to start a podcast with your iPhone" \
+	--directory tests/fixtures/model
 ```
 
 The inference pipeline is available when the local model assets and an
 optional TFLite runtime are installed. The command uses the multilingual model
 by default and downloads missing assets from the pinned Hugging Face revision.
+Use `--json` for machine-readable output, `--top-k` to limit results, and
+`--threshold` to override the configured cutoff. Use `--variant english` for
+the English-only model build.
 
-To install an optional TFLite runtime for future inference work, choose one:
+### Choose an inference runtime
+
+Use **LiteRT** for new installations. It is the official successor to
+`tflite-runtime` and is the lighter, purpose-built option for running the
+bundled TFLite head:
 
 ```sh
 uv sync --extra dev --extra litert
+```
+
+Use **TensorFlow** instead when your project already depends on TensorFlow or
+you need its broader compatibility with an existing TensorFlow toolchain:
+
+```sh
 uv sync --extra dev --extra tensorflow
 ```
+
+The head tries LiteRT first and falls back to TensorFlow. Install only one
+runtime when possible; if both are installed, LiteRT is used.
 
 ## Reference assets
 
