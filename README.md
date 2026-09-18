@@ -153,23 +153,32 @@ uv run twine check dist/*
 
 ## Release
 
-The release workflow builds and publishes both the wheel and source archive
-when a `v*` tag is pushed. It uses PyPI Trusted Publishing, so no PyPI token is
-stored in GitHub Actions. Configure the PyPI project publisher for this
-repository, workflow, and the `pypi` environment before publishing.
+Releases are driven by Conventional Commits on `main` using
+`python-semantic-release`. It updates the version in `pyproject.toml`, keeps
+`uv.lock` synchronized, updates [CHANGELOG.md](CHANGELOG.md), creates a `v*`
+tag and GitHub release, and publishes the wheel and source archive to PyPI.
 
-To prepare a release locally:
+PyPI publishing uses Trusted Publishing, so no PyPI token is stored in GitHub
+Actions. Configure the PyPI project publisher for this repository, workflow,
+and the `pypi` environment before publishing.
+
+Use commit prefixes to select the release level:
+
+- `fix:` creates a patch release
+- `feat:` creates a minor release
+- `BREAKING CHANGE:` or a `!` after the commit type creates a major release
+
+To preview the next release locally without changing files, run:
 
 ```sh
-uv run python -m build
-uv run twine check dist/*
+uv run semantic-release --noop version
 ```
 
-After updating the version in `pyproject.toml`, create and push a matching tag:
+Push a Conventional Commit to `main` to trigger the release workflow:
 
 ```sh
-git tag v0.1.0
-git push origin v0.1.0
+git commit -m "fix: improve model loading error"
+git push origin main
 ```
 
 ## Continuous integration

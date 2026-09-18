@@ -2,49 +2,48 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build distribution
+  release:
+    name: Semantic release
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-release-${{ github.ref_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
         with:
-          version: "0.9.17"
-          enable-cache: true
-          cache-dependency-glob: uv.lock
+          fetch-depth: 0
 
-      - name: Set up Python
-        run: uv python install 3.14
-
-      - name: Install release tools
-        run: uv sync --python 3.14 --extra dev
-
-      - name: Build distributions
-        run: uv build
-
-      - name: Check distribution metadata
-        run: uv run twine check dist/*
+      - name: Run semantic-release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v10.6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
+        if: steps.release.outputs.released == 'true'
         uses: actions/upload-artifact@v6
         with:
           name: distributions
           path: dist/
+          if-no-files-found: error
 
   publish:
     name: Publish to PyPI
-    needs: build
+    needs: release
+    if: needs.release.outputs.released == 'true'
     runs-on: ubuntu-latest
     permissions:
       id-token: write

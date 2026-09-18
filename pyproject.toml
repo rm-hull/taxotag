@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "taxotag"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python port of Desert Ant Labs' Gist on-device topic tagger"
 readme = "README.md"
 license = { file = "LICENSE.md" }
@@ -27,3 +27,27 @@ package = true
 
 [tool.pytest.ini_options]
 markers = ["slow: model-backed tests that require the downloaded TFLite assets"]
+
+[dependency-groups]
+dev = [
+    "python-semantic-release>=10.6,<11",
+    "uv==0.9.17",
+]
+
+[tool.semantic_release]
+allow_zero_version = true
+build_command = """
+python -m pip install "uv==0.9.17"
+uv lock --upgrade-package "$PACKAGE_NAME"
+git add uv.lock
+uv build
+"""
+commit_parser = "conventional"
+tag_format = "v{version}"
+version_toml = ["pyproject.toml:project.version"]
+
+[tool.semantic_release.changelog]
+exclude_commit_patterns = ["^chore\\(release\\):"]
+
+[tool.semantic_release.remote]
+token = { env = "GH_TOKEN" }
