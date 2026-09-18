@@ -43,7 +43,7 @@ jobs:
 
       - name: Restore model assets
         id: model-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: tests/fixtures/model
           key: gist-model-${{ env.MODEL_REVISION }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Restore model assets
         id: model-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: tests/fixtures/model
           key: gist-model-${{ env.MODEL_REVISION }}
