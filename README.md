@@ -76,6 +76,19 @@ uv sync --extra dev --extra litert
 uv sync --extra dev --extra tensorflow
 ```
 
+## Reference assets
+
+Phase 1 reference fixtures are stored under `tests/fixtures/` and the pinned
+Swift implementation is under `tests/reference/swift/`. Download the local
+model assets from Hugging Face revision `v2.2.0` with:
+
+```sh
+uv run python scripts/fetch_test_assets.py
+```
+
+The model files are ignored by git and are not included in distributions. The
+script downloads them into `tests/fixtures/model/` for local development.
+
 ## License
 
 The `taxotag` wrapper code is available under the MIT license. Model weights
