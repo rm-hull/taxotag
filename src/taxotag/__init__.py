@@ -2,4 +2,4 @@
 
 from .model import Gist, GistError, Topic
 
-__all__ = ["Gist", "Topic", "GistError"]
+__all__ = ["Gist", "GistError", "Topic"]

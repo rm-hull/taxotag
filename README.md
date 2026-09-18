@@ -41,8 +41,8 @@ uv run pytest
 Run linting and formatting checks:
 
 ```sh
-uv run ruff check .
-uv run ruff format --check .
+uv run ruff check src/
+uv run ruff format --check src/
 ```
 
 Run the type checker:
