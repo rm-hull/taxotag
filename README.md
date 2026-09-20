@@ -21,10 +21,12 @@ instead:
 pip install "taxotag[tensorflow]"
 ```
 
-The package downloads the pinned model assets from Hugging Face when the model
-is first constructed. To use assets that you downloaded or packaged yourself,
-pass their directory explicitly. The directory must contain the tokenizer,
-embedding table and metadata, config, taxonomy, and `gist.tflite` files.
+The package downloads the pinned model assets from the
+[Desert Ant Labs Gist model repository on Hugging Face](https://huggingface.co/desert-ant-labs/gist)
+when the model is first constructed. To use assets that you downloaded or
+packaged yourself, pass their directory explicitly. The directory must contain
+the tokenizer, embedding table and metadata, config, taxonomy, and
+`gist.tflite` files.
 
 ### Classify text
 
