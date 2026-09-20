@@ -8,7 +8,19 @@ from pathlib import Path
 from huggingface_hub import hf_hub_download
 
 REPOSITORY = "desert-ant-labs/gist"
-REVISION = "v2.2.0"
+
+
+def _get_revision() -> str:
+    """Read revision from .model-revision file."""
+    # Look for .model-revision in the package directory
+    revision_file = Path(__file__).parent / ".model-revision"
+    if revision_file.exists():
+        return revision_file.read_text().strip()
+    # Fallback to default
+    return "v2.2.0"
+
+
+REVISION = _get_revision()
 
 
 @dataclass(frozen=True)
