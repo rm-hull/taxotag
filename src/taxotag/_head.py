@@ -50,7 +50,7 @@ class Head:
     def run(self, features: np.ndarray) -> np.ndarray:
         """Run the head and return a one-dimensional float32 probability vector."""
 
-        values = np.asarray(features, dtype=np.float32)
+        values = np.asarray(features, dtype=self._input["dtype"])
         if values.ndim == 1:
             values = values.reshape(1, -1)
         if values.ndim != 2 or values.shape[0] != 1:
